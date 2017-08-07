@@ -45,6 +45,7 @@ class Reservation(models.Model):
     comments = models.TextField(max_length=1000)
     user_id = models.ForeignKey(User, related_name='users')
     vehicle_id = models.ForeignKey(Car, related_name='cars')
+    charge_id = models.CharField(max_length=234)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = ReservationManager()

@@ -74,6 +74,19 @@
         {% csrf_token %}
         <input type="submit" value="Book Vehicle">
       </form>
+      <form action="/checkout" method="POST">
+        {% csrf_token %}
+        <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+          data-key="{{stripe_key}}" # Make sure to wrap the variable name with double {}
+          data-amount="{{stripetotal}}"
+          data-name="{{car.vehiclename}}"
+          data-description="Pickup: {{request.session.starttime}} {{request.session.startdate}} Return: {{request.session.endtime}} {{request.session.enddate}}"
+          data-image="{{photo.picture.url}}"
+          data-currency="usd">
+        </script>
+        <input type="hidden" name="amount" value="{{stripetotal}}">
+        <input type="hidden" name="description" value="Pickup: {{request.session.starttime}} {{request.session.startdate}} Return: {{request.session.endtime}} {{request.session.enddate}}">
+      </form>
     </div>
     <div class="specials">
     </div>

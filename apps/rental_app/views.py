@@ -4,6 +4,10 @@ from __future__ import unicode_literals
 from django.shortcuts import render, redirect
 from .models import User, Car, Photo, Reservation
 from datetime import datetime
+from rentalsite import settings
+
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
 def addCar(request):
@@ -50,10 +54,13 @@ def cart(request):
     d2 = datetime.strptime(request.session['enddate'], "%m/%d/%Y")
     dt = abs((d2 - d1).days)
     total = dt * int(request.session['rentalprice'])
+    stripetotal = total *100
     carInfo = {
     'car': this_car,
     'photos': photo,
-    'total' : total
+    'total' : total,
+    'stripetotal' : stripetotal,
+    'stripe_key' : settings.STRIPE_PUBLIC_KEY
     }
     return render(request, 'rental_app/cart.html', carInfo)
 
@@ -65,6 +72,25 @@ def info(request, id):
     'photos': photo
     }
     return render(request, 'rental_app/info.html', carInfo)
+
+def checkout(request):
+    if request.method == "POST":
+        token = request.POST.get("stripeToken")
+
+    try:
+        charge = stripe.Charge.create(
+            amount = request.POST['amount'],
+            currency = "usd",
+            source = token,
+            description = request.POST['description']
+        )
+        request.session['charge_id'] = charge.id
+
+    except stripe.error.CardError as ce:
+        return False, ce
+
+    else:
+        return redirect('/addreservation')
 
 def addreservation(request):
     this_user = User.objects.get(id=request.session['user_id'])
@@ -81,6 +107,19 @@ def addreservation(request):
     'starttime': request.session['starttime'],
     'endtime': request.session['endtime'],
     'comments': request.session['comments'],
+    'charge_id' : request.session['charge_id']
     }
     Reservation.objects.addReservation(context)
-    return redirect('/')
+
+    request.session['vehicle_id'] = null
+    request.session['rentalprice'] = null
+    request.session['startdate'] = null
+    request.session['enddate'] = null
+    request.session['starttime'] = null
+    request.session['endtime'] = null
+    request.session['comments'] = null
+
+    return redirect('/thankyou')
+
+def thankyou(request):
+    return render(request, 'rental_app/thankyou.html')

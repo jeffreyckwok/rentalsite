@@ -9,7 +9,6 @@
     <meta charset="utf-8">
     <title>Star Car Rentals</title>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="/resources/demos/style.css">
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script>
@@ -18,6 +17,7 @@
       from = $( "#from" )
         .datepicker({
           defaultDate: "+1w",
+          minDate: 0,
           changeMonth: true,
           numberOfMonths: 2
         })
@@ -26,6 +26,7 @@
         }),
       to = $( "#to" ).datepicker({
         defaultDate: "+1w",
+        minDate: 1,
         changeMonth: true,
         numberOfMonths: 2
       })
