@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Star Car Rentals</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  $( function() {
+    var dateFormat = "mm/dd/yy",
+      from = $( "#from" )
+        .datepicker({
+          defaultDate: "+1w",
+          changeMonth: true,
+          numberOfMonths: 2
+        })
+        .on( "change", function() {
+          to.datepicker( "option", "minDate", getDate( this ) );
+        }),
+      to = $( "#to" ).datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        numberOfMonths: 2
+      })
+      .on( "change", function() {
+        from.datepicker( "option", "maxDate", getDate( this ) );
+      });
+
+    function getDate( element ) {
+      var date;
+      try {
+        date = $.datepicker.parseDate( dateFormat, element.value );
+      } catch( error ) {
+        date = null;
+      }
+
+      return date;
+    }
+  } );
+  </script>
+  </head>
+  <body>
+    <div class="jumbotron">
+    <div class="container text-center"><h1>Drive the Movies!<h1></div>
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Logo</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="{% url 'rentals:rentals' %}">Cars</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        {% if request.session.user_id %}<li><a href="#">Hello, {{request.session.user_firstname}}</a></li>
+        <li><a href="{% url 'login:logout' %}">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>
+        <li><a href="/login"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
+        {% else %}<li><a href="/login">Login <span class="glyphicon glyphicon-log-in"></span></a></li>{% endif %}
+        <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart</a></li>
+      </ul>
+    </div>
+  </div>
+    </nav>
+    <div class="carousel">
+      <p>{{car.vehiclename}}</p>
+      <p>${{car.rentalprice}} per day</p>
+      {% for photo in photos %}
+      <img src="{{photo.picture.url}}">
+      {% endfor %}
+      <p>{{car.description}}</p>
+      {% if request.session.user_id %}
+      <form action="/addtocart" method="POST">
+        {% csrf_token %}
+        <h3>Reserve this car</h3>
+        <input type="hidden" name="carid" value="{{car.id}}">
+        <input type="hidden" name="dailyrate" value="{{car.rentalprice}}">
+        <p>From: <input type="text" id="from" name="startdate">
+          <input type="text" id="to" name="enddate">
+        </p>
+        <p> Pickup Time: <input type="time" name="starttime"></p>
+        <p> Return Time: <input type="time" name="endtime"></p>
+        <div class="form-group"><textarea class="form-control" rows="5" name="comments">Please include any comments or special requests here:
+        </textarea></div>
+
+        <input type="submit" value="Add to Cart">
+
+      </form>
+      {% else %}
+      <h2>Login or create an account to book this vehicle!</h2>
+      {% endif %}
+    </div>
+    <div class="specials">
+    </div>
+    <div class="aboutus">
+    </div>
+    </div>
+  </body>
+</html>

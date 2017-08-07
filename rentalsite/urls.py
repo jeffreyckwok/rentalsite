@@ -1,0 +1,34 @@
+"""rentalsite URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/1.11/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.conf.urls import url, include
+    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+"""
+from django.conf.urls import url, include
+from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+
+# from apps.login_app.models import User as U
+# class UAdmin(admin.ModelAdmin):
+#     pass
+# admin.site.register(U, UAdmin)
+# from apps.rental_app.models import Car as C
+# class CAdmin(admin.ModelAdmin):
+#     pass
+# admin.site.register(C, CAdmin)
+
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    url(r'^', include('apps.rental_app.urls', namespace='rentals')),
+    url(r'^login/', include('apps.login_app.urls', namespace='login'))
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

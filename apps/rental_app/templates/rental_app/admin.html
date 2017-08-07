@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Admin</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <th>Car</th>
+        <th>Edit</th>
+        <th>Delete</th>
+      </tr>
+      {% for car in cars %}
+      <tr>
+        <td>{{car.vehiclename}}</td>
+        <td><a href="/edit/{{car.id}}">Edit</a><td>
+        <td><a href="/delete/{{car.id}}">Delete</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <a href="/add">Add Vehicle</a>
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Vehicle</th>
+        <th>Reservation Time</th>
+        <th>Comments</th>
+      </tr>
+      {% for res in reservations %}
+      <tr>
+        <td>{{res.first_name}} {{res.last_name}}</td>
+        <td>{{res.vehiclename}}</td>
+        <td>{{res.startdate}} {{res.starttime}} - {{res.enddate}} {{res.endtime}}</td>
+        <td>{{res.comments}}</td>
+      </tr>
+
+    </table>
+  </body>
+</html>
