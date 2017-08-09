@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from .models import User, Car, Photo, Reservation
 from datetime import datetime, timedelta
 from rentalsite import settings
+from django.db.models import Q
 
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -25,6 +26,19 @@ def index(request):
 # def admin(request):
 #     return render(request, 'rental_app/admin.html')
 
+def search(request):
+    d1 = datetime.strptime(request.POST['startdate'], "%m/%d/%Y").strftime('%Y-%m-%d')
+    d2 = datetime.strptime(request.POST['enddate'], "%m/%d/%Y").strftime('%Y-%m-%d')
+    conflicts = Reservation.objects.filter(Q(startdate__range=[d1,d2]) | Q(enddate__range=[d1,d2]))
+    excludedvehicles = []
+    for conflict in conflicts:
+        excludedvehicles.append(conflict.vehicle_id)
+    available_cars = Car.objects.all().exclude(pk__in=[p.pk for p in excludedvehicles])
+    context = {
+    'all_cars': available_cars,
+    }
+    return render(request, 'rental_app/rentals.html', context)
+
 def rentals(request):
         all_cars = Car.objects.all().order_by('id')
         # car = Car.objects.all()
@@ -35,6 +49,15 @@ def rentals(request):
         # 'all_photos': car_photo
         }
         return render(request, 'rental_app/rentals.html', context)
+
+def account(request):
+    pastres = Reservation.objects.filter(id=request.session['user_id']).filter(startdate__lt=datetime.date.today())
+    upcoming = Reservation.objects.filter(id=request.session['user_id']).filter(startdate__gte=datetime.date.today())
+    context = {
+        'past_res': pastres,
+        'upcoming_res': upcoming,
+    }
+    return render(request, 'rental_app/account.html', context)
 
 def addtocart(request):
     request.session['vehicle_id'] = request.POST['carid']

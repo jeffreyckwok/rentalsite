@@ -24,6 +24,7 @@ form {
   background-color: #fff;
   padding: 10px;
   border-radius: 10px;
+  box-shadow: 5px 5px 2px #888888;
 }
 
 .searchform {
@@ -44,7 +45,7 @@ form {
 .logo {
   margin-top: 20%;
   color: #fff;
-  text-shadow: 2px 2px #000;
+  text-shadow: 4px 4px #000;
   font-weight: 800;
   font-size: 48pt;
   padding: 25px;
@@ -128,16 +129,16 @@ form {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
+      <a class="navbar-brand" href="/">Star Car Rentals</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">Star Car Rentals</a></li>
         <li><a href="{% url 'rentals:rentals' %}">Cars</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if request.session.user_id %}<li><span class="navbar-text">Hello, {{request.session.user_firstname}}</span></li>
         <li><a href="{% url 'login:logout' %}">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>
-        <li><a href="/login"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
+        <li><a href="/account"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
         {% else %}<li><a href="/login">Login <span class="glyphicon glyphicon-log-in"></span></a></li>{% endif %}
         <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart</a></li>
       </ul>
@@ -154,6 +155,7 @@ form {
             <div class="col-med-4 logo text-center">Drive the Movies!
               <div class="searchform">
                 <form action="/search" method="POST">
+                  {% csrf_token %}
                   Search for available cars
                 from: <input type="text" id="from" class="col-2 col-form-label" name="startdate">
                   to: <input type="text" id="to" class="col-2 col-form-label" name="enddate">

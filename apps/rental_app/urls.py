@@ -6,6 +6,7 @@ from django.conf import settings
 urlpatterns = [
     url(r'^$', views.index, name = "index"),
     # url(r'^admin$', views.admin, name="admin"),
+    url(r'^search$', views.search, name = "search"),
     url(r'^rentals$', views.rentals, name="rentals"),
     url(r'^addtocart$', views.addtocart, name="addtocart"),
     url(r'^addreservation$', views.addreservation, name="addreservation"),
