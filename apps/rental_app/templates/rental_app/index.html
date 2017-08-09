@@ -1,18 +1,126 @@
 <!DOCTYPE html>
 {% load bootstrap3 %}
 {% bootstrap_css %}
-{% bootstrap_javascript %}
+{% bootstrap_javascript jquery=True %}
 {% bootstrap_messages %}
 
 <html>
   <head>
     <meta charset="utf-8">
     <title>Star Car Rentals</title>
+    <style>
+    body,
+html {
+  height: 100%;
+}
+body {
+  padding-top: 50px;
+}
+
+form {
+  font-size: 14pt;
+  color: #000;
+  text-shadow: none;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.searchform {
+  width: 80%;
+  margin-left: 10%;
+}
+.full {
+  padding: 0 !important;
+  margin: 0 auto !important;
+  background-size: cover;
+  overflow: hidden;
+}
+.wide {
+  width: 100%;
+  height: auto;
+}
+
+.logo {
+  margin-top: 20%;
+  color: #fff;
+  text-shadow: 2px 2px #000;
+  font-weight: 800;
+  font-size: 48pt;
+  padding: 25px;
+  text-align: center;
+}
+@media (orientation: portrait) {
+  .full {
+    background-size: 200% auto;
+    background-position: top right;
+  }
+}
+   /* Remove the navbar's default rounded borders and increase the bottom margin */
+   .navbar {
+     margin-bottom: 10px;
+     border-radius: 0;
+   }
+
+   /* Remove the jumbotron's default bottom margin */
+    .jumbotron {
+     margin-bottom: 0;
+   }
+
+   /* Add a gray background color and some padding to the footer */
+   footer {
+     background-color: #f2f2f2;
+     margin-top: 10px;
+     padding: 25px;
+   }
+ </style>
+</style>
+   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+ <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+ <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ <script>
+ $( function() {
+   var dateFormat = "mm/dd/yy",
+     from = $( "#from" )
+       .datepicker({
+         defaultDate: 0,
+         minDate: 0,
+         changeMonth: true,
+         numberOfMonths: 2,
+       })
+       .on( "change", function() {
+         to.datepicker( "option", "minDate", getDate( this ) );
+       }),
+     to = $( "#to" ).datepicker({
+       defaultDate: 1,
+       minDate: 1,
+       changeMonth: true,
+       numberOfMonths: 2,
+     })
+     .on( "change", function() {
+       from.datepicker( "option", "maxDate", getDate( this ) );
+     });
+     $("#from").datepicker("setDate", new Date());
+     $("#to").datepicker("setDate", 1);
+
+   function getDate( element ) {
+     var date;
+     try {
+       date = $.datepicker.parseDate( dateFormat, element.value );
+     } catch( error ) {
+       date = null;
+     }
+
+     return date;
+   }
+ } );
+ </script>
   </head>
   <body>
-    <div class="jumbotron">
+    <!-- <div class="jumbotron">
     <div class="container text-center"><h1>Drive the Movies!<h1></div>
-    <nav class="navbar navbar-inverse">
+    </div> -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -23,11 +131,11 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">Home</a></li>
+        <li class="active"><a href="/">Star Car Rentals</a></li>
         <li><a href="{% url 'rentals:rentals' %}">Cars</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        {% if request.session.user_id %}<li><a href="#">Hello, {{request.session.user_firstname}}</a></li>
+        {% if request.session.user_id %}<li><span class="navbar-text">Hello, {{request.session.user_firstname}}</span></li>
         <li><a href="{% url 'login:logout' %}">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>
         <li><a href="/login"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
         {% else %}<li><a href="/login">Login <span class="glyphicon glyphicon-log-in"></span></a></li>{% endif %}
@@ -36,12 +144,33 @@
     </div>
   </div>
     </nav>
-    <div class="carousel">
-    </div>
-    <div class="specials">
-    </div>
-    <div class="aboutus">
-    </div>
-    </div>
+    <div class="full" style="background-image:url('http://i.imgur.com/ObIjAAS.gif');">
+      <div class="container">
+        <div class="row clearfix">
+          <div style="padding: 0 0 60% 0;">
+            <!-- <div class="col-xs-5 line">
+              <hr>
+            </div> -->
+            <div class="col-med-4 logo text-center">Drive the Movies!
+              <div class="searchform">
+                <form action="/search" method="POST">
+                  Search for available cars
+                from: <input type="text" id="from" class="col-2 col-form-label" name="startdate">
+                  to: <input type="text" id="to" class="col-2 col-form-label" name="enddate">
+                  <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+              </div>
+            </div>
+            <!-- <div class="col-xs-5 line">
+              <hr> -->
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+    <footer class="container-fluid text-center">
+      <a href="/aboutus">About Us</a>
+    </footer>
   </body>
 </html>

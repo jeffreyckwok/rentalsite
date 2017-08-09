@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
 from .models import User, Car, Photo, Reservation
-from datetime import datetime
+from datetime import datetime, timedelta
 from rentalsite import settings
 
 import stripe
@@ -47,29 +47,45 @@ def addtocart(request):
     return redirect('/cart')
 
 def cart(request):
-    id = request.session['vehicle_id']
-    this_car = Car.objects.get(id=id)
-    photo = Photo.objects.filter(car_id=this_car)
-    d1 = datetime.strptime(request.session['startdate'], "%m/%d/%Y")
-    d2 = datetime.strptime(request.session['enddate'], "%m/%d/%Y")
-    dt = abs((d2 - d1).days)
-    total = dt * int(request.session['rentalprice'])
-    stripetotal = total *100
-    carInfo = {
-    'car': this_car,
-    'photos': photo,
-    'total' : total,
-    'stripetotal' : stripetotal,
-    'stripe_key' : settings.STRIPE_PUBLIC_KEY
-    }
-    return render(request, 'rental_app/cart.html', carInfo)
+    if 'vehicle_id' not in request.session:
+        return render(request, 'rental_app/cart.html')
+    else:
+        id = request.session['vehicle_id']
+        this_car = Car.objects.get(id=id)
+        photo = Photo.objects.filter(car_id=this_car)
+        d1 = datetime.strptime(request.session['startdate'], "%m/%d/%Y")
+        d2 = datetime.strptime(request.session['enddate'], "%m/%d/%Y")
+        dt = abs((d2 - d1).days)
+        total = dt * int(request.session['rentalprice'])
+        stripetotal = total *100
+        carInfo = {
+        'car': this_car,
+        'photos': photo,
+        'total' : total,
+        'stripetotal' : stripetotal,
+        'stripe_key' : settings.STRIPE_PUBLIC_KEY
+        }
+        return render(request, 'rental_app/cart.html', carInfo)
 
 def info(request, id):
     this_car = Car.objects.get(id=id)
     photo = Photo.objects.filter(car_id=this_car)
+    reservations = Reservation.objects.filter(vehicle_id=this_car)
+    booked_dates = []
+    for res in reservations:
+        d1 = res.startdate
+        d2 = res.enddate
+        dt = d2 - d1
+        for i in range(dt.days+1):
+            d = d1 + timedelta(days=i)
+            date_string = d.strftime('%m/%d/%Y')
+            print "added day"
+            print date_string
+            booked_dates.append(date_string)
     carInfo = {
     'car': this_car,
-    'photos': photo
+    'photos': photo,
+    'booked_dates': booked_dates
     }
     return render(request, 'rental_app/info.html', carInfo)
 
@@ -111,13 +127,13 @@ def addreservation(request):
     }
     Reservation.objects.addReservation(context)
 
-    request.session['vehicle_id'] = null
-    request.session['rentalprice'] = null
-    request.session['startdate'] = null
-    request.session['enddate'] = null
-    request.session['starttime'] = null
-    request.session['endtime'] = null
-    request.session['comments'] = null
+    del request.session['vehicle_id']
+    del request.session['rentalprice']
+    del request.session['startdate']
+    del request.session['enddate']
+    del request.session['starttime']
+    del request.session['endtime']
+    del request.session['comments']
 
     return redirect('/thankyou')
 

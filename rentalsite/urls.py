@@ -18,15 +18,6 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-# from apps.login_app.models import User as U
-# class UAdmin(admin.ModelAdmin):
-#     pass
-# admin.site.register(U, UAdmin)
-# from apps.rental_app.models import Car as C
-# class CAdmin(admin.ModelAdmin):
-#     pass
-# admin.site.register(C, CAdmin)
-
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('apps.rental_app.urls', namespace='rentals')),

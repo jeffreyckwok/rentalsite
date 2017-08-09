@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% load bootstrap3 %}
 {% bootstrap_css %}
-{% bootstrap_javascript %}
+{% bootstrap_javascript jquery=True %}
 {% bootstrap_messages %}
 
 <html>
@@ -11,7 +11,7 @@
     <style>
    /* Remove the navbar's default rounded borders and increase the bottom margin */
    .navbar {
-     margin-bottom: 50px;
+     margin-bottom: 10px;
      border-radius: 0;
    }
 
@@ -23,6 +23,7 @@
    /* Add a gray background color and some padding to the footer */
    footer {
      background-color: #f2f2f2;
+     margin-top: 10px;
      padding: 25px;
    }
  </style>
@@ -46,7 +47,7 @@
         <li><a href="{% url 'rentals:rentals' %}">Cars</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        {% if request.session.user_id %}<li><a href="#">Hello, {{request.session.user_firstname}}</a></li>
+        {% if request.session.user_id %}<li><span class="navbar-text">Hello, {{request.session.user_firstname}}</span></li>
         <li><a href="{% url 'login:logout' %}">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>
         <li><a href="/login"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
         {% else %}<li><a href="/login">Login <span class="glyphicon glyphicon-log-in"></span></a></li>{% endif %}
@@ -55,7 +56,7 @@
     </div>
   </div>
     </nav>
-    <div class="col-sm-4">
+    <div class="container">
       {% if request.session.user_id and request.session.vehicle_id %}
       <h2>Your planned reservation:</h2>
       <p>{{car.vehiclename}}</p>
@@ -67,30 +68,26 @@
       {% endfor %}
       <h3>Reservation Comments</h3>
       <p>{{request.session.comments}}</p>
-      {% else %}
-      <p>Your cart is empty</p>
-      {% endif %}
-      <form action="/addreservation" method="POST">
-        {% csrf_token %}
-        <input type="submit" value="Book Vehicle">
-      </form>
       <form action="/checkout" method="POST">
         {% csrf_token %}
         <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-          data-key="{{stripe_key}}" # Make sure to wrap the variable name with double {}
-          data-amount="{{stripetotal}}"
-          data-name="{{car.vehiclename}}"
-          data-description="Pickup: {{request.session.starttime}} {{request.session.startdate}} Return: {{request.session.endtime}} {{request.session.enddate}}"
-          data-image="{{photo.picture.url}}"
-          data-currency="usd">
+        data-label="Book and Pay"
+        data-key="{{stripe_key}}" # Make sure to wrap the variable name with double {}
+        data-amount="{{stripetotal}}"
+        data-name="{{car.vehiclename}}"
+        data-description="Pickup: {{request.session.starttime}} {{request.session.startdate}} Return: {{request.session.endtime}} {{request.session.enddate}}"
+        data-image="{{photo.picture.url}}"
+        data-currency="usd">
         </script>
         <input type="hidden" name="amount" value="{{stripetotal}}">
         <input type="hidden" name="description" value="Pickup: {{request.session.starttime}} {{request.session.startdate}} Return: {{request.session.endtime}} {{request.session.enddate}}">
       </form>
-    </div>
-    <div class="specials">
-    </div>
-    <div class="aboutus">
+      {% else %}
+      <p>Your cart is empty</p>
+      {% endif %}
     </div>
   </body>
+  <footer class="container-fluid text-center">
+    <a href="/aboutus">About Us</a>
+  </footer>
 </html>

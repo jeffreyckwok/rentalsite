@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 {% load bootstrap3 %}
 {% bootstrap_css %}
-{% bootstrap_javascript %}
+{% bootstrap_javascript jquery=True %}
 {% bootstrap_messages %}
 
 <html>
   <head>
     <meta charset="utf-8">
     <title>Star Car Rentals</title>
+    <style>
+   /* Remove the navbar's default rounded borders and increase the bottom margin */
+   .navbar {
+     margin-bottom: 10px;
+     border-radius: 0;
+   }
+
+   /* Remove the jumbotron's default bottom margin */
+    .jumbotron {
+     margin-bottom: 0;
+   }
+
+   /* Add a gray background color and some padding to the footer */
+   footer {
+     background-color: #f2f2f2;
+     padding: 25px;
+   }
+ </style>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script>
+  var booked_dates = {{booked_dates|safe}}
+  var trima = []
+  for (i = 0; i < booked_dates.length; i++ ) {
+    trima.push(booked_dates[i].substring(10,''))
+  }
   $( function() {
     var dateFormat = "mm/dd/yy",
       from = $( "#from" )
@@ -19,7 +42,11 @@
           defaultDate: "+1w",
           minDate: 0,
           changeMonth: true,
-          numberOfMonths: 2
+          numberOfMonths: 2,
+          beforeShowDay: function(date){
+            var string = jQuery.datepicker.formatDate('mm/dd/yy', date);
+            return [ trima.indexOf(string) == -1]
+          }
         })
         .on( "change", function() {
           to.datepicker( "option", "minDate", getDate( this ) );
@@ -28,7 +55,11 @@
         defaultDate: "+1w",
         minDate: 1,
         changeMonth: true,
-        numberOfMonths: 2
+        numberOfMonths: 2,
+        beforeShowDay: function(date){
+          var string = jQuery.datepicker.formatDate('mm/dd/yy', date);
+          return [ trima.indexOf(string) == -1]
+        }
       })
       .on( "change", function() {
         from.datepicker( "option", "maxDate", getDate( this ) );
@@ -50,63 +81,71 @@
   <body>
     <div class="jumbotron">
     <div class="container text-center"><h1>Drive the Movies!<h1></div>
-    <nav class="navbar navbar-inverse">
-      <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Logo</a>
     </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="{% url 'rentals:rentals' %}">Cars</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        {% if request.session.user_id %}<li><a href="#">Hello, {{request.session.user_firstname}}</a></li>
-        <li><a href="{% url 'login:logout' %}">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>
-        <li><a href="/login"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
-        {% else %}<li><a href="/login">Login <span class="glyphicon glyphicon-log-in"></span></a></li>{% endif %}
-        <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart</a></li>
-      </ul>
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="/">Home</a></li>
+          <li><a href="{% url 'rentals:rentals' %}">Cars</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          {% if request.session.user_id %}<li><span class="navbar-text">Hello, {{request.session.user_firstname}}</span></li>
+          <li><a href="{% url 'login:logout' %}">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>
+          <li><a href="/login"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
+          {% else %}<li><a href="/login">Login <span class="glyphicon glyphicon-log-in"></span></a></li>{% endif %}
+          <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart</a></li>
+        </ul>
+      </div>
     </div>
-  </div>
-    </nav>
-    <div class="carousel">
-      <p>{{car.vehiclename}}</p>
-      <p>${{car.rentalprice}} per day</p>
+      </nav>
+      <div class="container">
+    <div class="col-sm-6">
+      <h2>{{car.vehiclename}}</h2>
       {% for photo in photos %}
       <img src="{{photo.picture.url}}">
       {% endfor %}
+      <h3>${{car.rentalprice}} per day</h3>
+      <h3>Details:</h3>
+      <p>Transmission: {{car.transmission}}</p>
+      <p>Passengers: {{car.passengers}}</p>
       <p>{{car.description}}</p>
       {% if request.session.user_id %}
       <form action="/addtocart" method="POST">
         {% csrf_token %}
-        <h3>Reserve this car</h3>
+        <div class="form-group">
+        <h3>Reserve this car:</h3>
         <input type="hidden" name="carid" value="{{car.id}}">
         <input type="hidden" name="dailyrate" value="{{car.rentalprice}}">
-        <p>From: <input type="text" id="from" name="startdate">
-          <input type="text" id="to" name="enddate">
-        </p>
+        <p>Date: <input type="text" id="from" class="col-2 col-form-label" name="startdate">
+          <input type="text" id="to" class="col-2 col-form-label" name="enddate"></p>
+
         <p> Pickup Time: <input type="time" name="starttime"></p>
         <p> Return Time: <input type="time" name="endtime"></p>
         <div class="form-group"><textarea class="form-control" rows="5" name="comments">Please include any comments or special requests here:
         </textarea></div>
 
-        <input type="submit" value="Add to Cart">
-
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+        </div>
       </form>
       {% else %}
+      <div class="col-sm-4">
       <h2>Login or create an account to book this vehicle!</h2>
+      </div>
       {% endif %}
+    </div>
     </div>
     <div class="specials">
     </div>
-    <div class="aboutus">
-    </div>
-    </div>
+    <footer class="container-fluid text-center">
+      <a href="/aboutus">About Us</a>
+    </footer>
   </body>
 </html>
