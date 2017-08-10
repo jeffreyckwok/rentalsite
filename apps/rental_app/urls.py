@@ -8,6 +8,7 @@ urlpatterns = [
     # url(r'^admin$', views.admin, name="admin"),
     url(r'^search$', views.search, name = "search"),
     url(r'^rentals$', views.rentals, name="rentals"),
+    url(r'^account$', views.account, name="account"),
     url(r'^addtocart$', views.addtocart, name="addtocart"),
     url(r'^addreservation$', views.addreservation, name="addreservation"),
     url(r'^cart$', views.cart, name ="cart"),

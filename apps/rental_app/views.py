@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
 from .models import User, Car, Photo, Reservation
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from rentalsite import settings
 from django.db.models import Q
 
@@ -51,12 +51,16 @@ def rentals(request):
         return render(request, 'rental_app/rentals.html', context)
 
 def account(request):
-    pastres = Reservation.objects.filter(id=request.session['user_id']).filter(startdate__lt=datetime.date.today())
-    upcoming = Reservation.objects.filter(id=request.session['user_id']).filter(startdate__gte=datetime.date.today())
+    userinfo = User.objects.get(id=request.session['user_id'])
+    pastres = Reservation.objects.filter(user_id=userinfo).filter(startdate__lt=date.today())
+    upcoming = Reservation.objects.filter(user_id=userinfo).filter(startdate__gte=date.today())
     context = {
+        'user' : userinfo,
         'past_res': pastres,
         'upcoming_res': upcoming,
     }
+    print pastres
+    print upcoming
     return render(request, 'rental_app/account.html', context)
 
 def addtocart(request):

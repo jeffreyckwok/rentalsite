@@ -9,6 +9,9 @@
     <meta charset="utf-8">
     <title>Account Registration</title>
     <style>
+    body {
+      padding-top: 70px;
+    }
    /* Remove the navbar's default rounded borders and increase the bottom margin */
    .navbar {
      margin-bottom: 10px;
@@ -28,10 +31,7 @@
  </style>
   </head>
   <body>
-    <div class="jumbotron">
-    <div class="container text-center"><h1>Drive the Movies!<h1></div>
-    </div>
-    <nav class="navbar navbar-inverse">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -39,16 +39,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
+      <a class="navbar-brand" href="/">Star Car Rentals</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">Home</a></li>
         <li><a href="{% url 'rentals:rentals' %}">Cars</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if request.session.user_id %}<li><span class="navbar-text">Hello, {{request.session.user_firstname}}</span></li>
         <li><a href="{% url 'login:logout' %}">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>
-        <li><a href="/login"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
+        <li><a href="/account"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
         {% else %}<li><a href="/login">Login <span class="glyphicon glyphicon-log-in"></span></a></li>{% endif %}
         <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart</a></li>
       </ul>
@@ -93,7 +93,7 @@
       </div>
     </div>
     <footer class="container-fluid text-center">
-      <a href="/aboutus">About Us</a>
+      <h4>© 2017 Jeffrey Kwok </h4>
     </footer>
 </body>
 </html>
