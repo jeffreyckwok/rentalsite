@@ -10,5 +10,6 @@ from .models import Reservation
 admin.site.register(Car)
 admin.site.register(Photo)
 admin.site.register(Reservation)
+admin.site.site_header = 'Star Car Rentals Admin Page'
 
 # Register your models here.

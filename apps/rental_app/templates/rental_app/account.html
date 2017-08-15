@@ -70,7 +70,10 @@
       {% if past_res %}
       <h2>Past Reservations</h2>
       {% for res in past_res %}
-      <h3>{{res.cars.vehiclename}}</h3>
+      <h3>{{res.vehicle_id}}</h3>
+      {% for photo in res.vehicle_id.car_photos.all %}
+      <img src="{{photo.picture.url}}" class="img-responsive" style="width:20% height: 20%" alt="Image">
+      {% endfor %}
       <p>{{res.startdate}} {{res.starttime}} to {{res.enddate}} {{res.endtime}}</p>
       {% endfor %}
       {% endif %}
